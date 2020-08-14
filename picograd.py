@@ -89,7 +89,7 @@ class Pico(object):
             self.value, 
             self.grad_
         )
-        self.history.append((variable_,'function'))
+        self.history.append((variable_,'f_linear'))
         return Pico(variable_,self.history)
     
     def relu(self):
@@ -97,7 +97,7 @@ class Pico(object):
             0.0 if self.value < 0.0 else self.value,
             0.0 if self.value < 0.0 else 1.0
         )
-        self.history.append((variable_,'function'))
+        self.history.append((variable_,'f_relu'))
         return Pico(variable_,self.history)
 
     def sigmoid(self):
@@ -106,7 +106,7 @@ class Pico(object):
             s(self.value),
             s(self.value)*(1.0-s(self.value)),
         )
-        self.history.append((variable_,'function'))
+        self.history.append((variable_,'f_sigmoid'))
         return Pico(variable_,self.history)
     
     def __repr__(self):
