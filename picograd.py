@@ -87,7 +87,7 @@ class Pico(object):
     def linear(self):
         variable_ = Variable(
             self.value, 
-            1.0
+            self.grad_
         )
         self.history.append((variable_,'function'))
         return Pico(variable_,self.history)
