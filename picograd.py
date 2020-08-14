@@ -26,8 +26,8 @@ def makeVarOperator(left,right,op,topological=False,ap_op=None):
         if isinstance(right,numbers.Real):
             variable_ = Variable(
                 operators[op] (left.value,right),
-                operators[op] (left.grad_,other),
-                (left.vn,other)
+                operators[op] (left.grad_,0.0),
+                (left.vn,right)
             )
         else:
             if topological:
@@ -142,7 +142,11 @@ class Pico(History):
     def backward(self):
         grad = 1.0
         for x in reversed(self.history):
-            if 'f_' in x[1]:
-                grad *= x[0].grad_
+            grad *= x[0].grad_
         return grad
 
+def main():
+    x = Variable(2.0)
+    y = Pico(x)
+    print(y.sigmoid())
+main()
