@@ -93,23 +93,7 @@ class Variable(History):
         )
         self.history.append((variable_,'**'))
         return Variable(variable_,self.history)
-
-class Pico(Variable):
-    def __init__(self,variable,history=None):
-        if isinstance(variable,Variable):
-            super(Pico,self).__init__(
-                value=variable.value,
-                grad_=variable.grad_,
-                name=variable.name,
-                history=history
-                )
-        else:
-            init_ = Variable(variable)
-            super(Pico,self).__init__(init_)
-
-    def grad(self):
-        return self.grad_
-
+    
     def linear(self):
         variable_ = Variable(
             self.value, 
@@ -117,7 +101,7 @@ class Pico(Variable):
             (self.name,)
         )
         self.history.append((variable_,'f_linear'))
-        return Pico(variable_,self.history)
+        return Variable(variable_,self.history)
     
     def relu(self):
         variable_ = Variable(
@@ -126,7 +110,7 @@ class Pico(Variable):
             (self.name,)
         )
         self.history.append((variable_,'f_relu'))
-        return Pico(variable_,self.history)
+        return Variable(variable_,self.history)
 
     def sigmoid(self):
         s = lambda x: 1 / (1.0 + math.exp(-1.0*x))
@@ -136,7 +120,7 @@ class Pico(Variable):
             (self.name,)
         )
         self.history.append((variable_,'f_sigmoid'))
-        return Pico(variable_,self.history)
+        return Variable(variable_,self.history)
     
     def sin(self):
         variable_ = Variable(
@@ -145,13 +129,14 @@ class Pico(Variable):
             (self.name,)
         )
         self.history.append((variable_,'f_cos'))
-        return Pico(variable_,self.history)
-        
-    def __repr__(self):
-        return "f: {0} \nforward: {1} \nbackward: {2}".format(self.value,self.grad_,self.backward()) 
-    
+        return Variable(variable_,self.history)
+
     def backward(self):
         grad = 1.0
         for x in reversed(self.history):
             grad *= x[0].grad_
         return grad
+
+class Pico(Variable):
+    def __init__(self,value,name=''):
+        super(Pico,self).__init__(value=value,name=name)
