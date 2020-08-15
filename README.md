@@ -29,5 +29,5 @@ plt.legend()
 plt.show()
 ```
 
-![sin_sin_der](https://github.com/estepmax/symbol/blob/master/screenshots/sinsin.png)
+![sin_sin_der](https://github.com/estepmax/picograd/blob/master/screenshots/sinsin.png)
 
