@@ -160,7 +160,7 @@ class Variable(History):
     def sin(self):
         variable_ = Variable(
             math.sin(self.value),
-            math.cos(self.value),
+            math.cos(self.value) * self.grad_,
             (self.obj,self)
         )
         self.history.append((variable_,'f_sin'))
@@ -186,9 +186,3 @@ class Pico(Variable):
         super(Pico,self).__init__(
             Variable(value=value,grad_=grad,obj=name)
         )
-
-def main():
-    x = Pico(2.0,name='x')
-    print((2*x).grad_)
-    print((x*2).grad_)
-main()
