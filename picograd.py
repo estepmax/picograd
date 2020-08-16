@@ -7,28 +7,21 @@ def makeVarOperator(left,right,op,topological=False,ap_op=None):
         "+" : operator.add,
         "-" : operator.sub,
         "*" : operator.mul,
-        "/" : operator.div
+        "/" : operator.truediv
     }
-    def closure():
-        if isinstance(right,numbers.Real):
+    def closure():  
+        if topological:
             variable_ = Variable(
-                operators[op] (left.value,right),
-                operators[op] (left.grad_,0.0),
+                operators[op] (left.value,right.value),
+                ap_op,
                 (left,right)
             )
         else:
-            if topological:
-                variable_ = Variable(
-                    operators[op] (left.value,right.value),
-                    ap_op,
-                    (left,right)
-                )
-            else:
-                variable_ = Variable(
-                    operators[op] (left.value,right.value),
-                    operators[op] (left.grad_,right.grad_),
-                    (left,right)
-                )
+            variable_ = Variable(
+                operators[op] (left.value,right.value),
+                operators[op] (left.grad_,right.grad_),
+                (left,right)
+            )
         return variable_
     return closure
 
@@ -40,7 +33,7 @@ class History(object):
             self.history = history
 
 class Variable(History):
-    def __init__(self,value,grad_=1.,obj='',history=None):
+    def __init__(self,value,grad_=1.,obj=None,history=None):
         super(Variable,self).__init__(value,history)
         if isinstance(value,Variable):
             self.value = value.value 
@@ -73,12 +66,12 @@ class Variable(History):
         self.history.append((variable_,'*'))
         return Variable(value=variable_,history=self.history)
 
-    def __div__(self,other):
+    def __truediv__(self,other):
         ap_op = (self.grad_ * other.value - self.value * other.grad_) / (other.value * other.value)
         variable_ = makeVarOperator(
             left=self,
             right=other,
-            op=None,
+            op='/',
             topological=True,
             ap_op=ap_op
         )()
@@ -139,15 +132,15 @@ class Variable(History):
         )
         self.history.append((variable_,'f_exp'))
         return Variable(value=variable_,history=self.history)
-
+    
     def backward(self):
         grad = 1.0
         for x in reversed(self.history):
             grad *= x[0].grad_
         return grad
-    
-class Pico(Variable):
-    def __init__(self,value,name=''):
+
+class Pico(Variable):  
+    def __init__(self,value,grad=1.,name=''):
         super(Pico,self).__init__(
-            Variable(value=value,obj=name)
+            Variable(value=value,grad_=grad,obj=name)
         )
