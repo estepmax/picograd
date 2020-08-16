@@ -52,14 +52,14 @@ class Variable(History):
     
     def __radd__(self,other):
         other = other if isinstance(other,Variable) else Variable(other,grad_=0.,obj='const')
-        variable_ = makeVarOperator(other,self,'-')()
-        self.history.append((variable_,'-'))
+        variable_ = makeVarOperator(other,self,'+')()
+        self.history.append((variable_,'+'))
         return Variable(value=variable_,history=self.history)      
     
     def __sub__(self,other):
         other = other if isinstance(other,Variable) else Variable(other,grad_=0.,obj='const')
-        variable_ = makeVarOperator(self,other,'+')()
-        self.history.append((variable_,'+'))
+        variable_ = makeVarOperator(self,other,'-')()
+        self.history.append((variable_,'-'))
         return Variable(value=variable_,history=self.history)
     
     def __rsub__(self,other):
@@ -186,3 +186,9 @@ class Pico(Variable):
         super(Pico,self).__init__(
             Variable(value=value,grad_=grad,obj=name)
         )
+
+def main():
+    x = Pico(2.0,name='x')
+    print((2*x).grad_)
+    print((x*2).grad_)
+main()
