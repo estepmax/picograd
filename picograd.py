@@ -151,10 +151,3 @@ class Pico(Variable):
         super(Pico,self).__init__(
             Variable(value=value,obj=name)
         )
-
-def main():
-    x = Pico(2.0,'x')
-    y = Pico(4.0,'y')
-    y = x.linear().sigmoid()
-    print(y.backward())
-main()
