@@ -45,16 +45,31 @@ class Variable(History):
             self.obj = obj
     
     def __add__(self,other):
+        other = other if isinstance(other,Variable) else Variable(other,grad_=0.,obj='const')
         variable_ = makeVarOperator(self,other,'+')()
         self.history.append((variable_,'+'))
         return Variable(value=variable_,history=self.history)
-        
-    def __sub__(self,other):
-        variable_ = makeVarOperator(self,other,'-')()
+    
+    def __radd__(self,other):
+        other = other if isinstance(other,Variable) else Variable(other,grad_=0.,obj='const')
+        variable_ = makeVarOperator(other,self,'-')()
         self.history.append((variable_,'-'))
+        return Variable(value=variable_,history=self.history)      
+    
+    def __sub__(self,other):
+        other = other if isinstance(other,Variable) else Variable(other,grad_=0.,obj='const')
+        variable_ = makeVarOperator(self,other,'+')()
+        self.history.append((variable_,'+'))
         return Variable(value=variable_,history=self.history)
     
+    def __rsub__(self,other):
+        other = other if isinstance(other,Variable) else Variable(other,grad_=0.,obj='const')
+        variable_ = makeVarOperator(other,self,'-')()
+        self.history.append((variable_,'-'))
+        return Variable(value=variable_,history=self.history)
+
     def __mul__(self,other):
+        other = other if isinstance(other,Variable) else Variable(other,grad_=0.,obj='const')
         ap_op = self.value * other.grad_ + self.grad_ * other.value
         variable_ = makeVarOperator(
             left=self,
@@ -66,11 +81,38 @@ class Variable(History):
         self.history.append((variable_,'*'))
         return Variable(value=variable_,history=self.history)
 
+    def __rmul__(self,other):
+        other = other if isinstance(other,Variable) else Variable(other,grad_=0.,obj='const')
+        ap_op = other.value * self.grad_ + other.grad_ * self.value
+        variable_ = makeVarOperator(
+            left=other,
+            right=self,
+            op='*',
+            topological=True,
+            ap_op=ap_op
+        )()
+        self.history.append((variable_,'*'))
+        return Variable(value=variable_,history=self.history)
+
     def __truediv__(self,other):
+        other = other if isinstance(other,Variable) else Variable(other,grad_=0.,obj='const')
         ap_op = (self.grad_ * other.value - self.value * other.grad_) / (other.value * other.value)
         variable_ = makeVarOperator(
             left=self,
             right=other,
+            op='/',
+            topological=True,
+            ap_op=ap_op
+        )()
+        self.history.append((variable_,'/'))
+        return Variable(value=variable_,history=self.history)
+    
+    def __rtruediv__(self,other):
+        other = other if isinstance(other,Variable) else Variable(other,grad_=0.,obj='const')
+        ap_op = (other.grad_ * self.value - other.value * self.grad_) / (self.value * self.value)
+        variable_ = makeVarOperator(
+            left=other,
+            right=self,
             op='/',
             topological=True,
             ap_op=ap_op
