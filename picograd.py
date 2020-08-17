@@ -139,7 +139,7 @@ class Variable(History):
     def relu(self):
         variable = Variable(
             0.0 if self.value < 0.0 else self.value,
-            0.0 if self.value < 0.0 else 1.0,
+            0.0 if self.value < 0.0 else self.grad,
             (self.obj,self),
             self.history
         )
