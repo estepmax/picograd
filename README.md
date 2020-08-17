@@ -20,7 +20,7 @@ for k in arange:
     x = Pico(k)
     g = x.sin().sin()
     f.append(g.value)
-    df.append(g.grad_)
+    df.append(g.grad)
 plt.plot(f,label="sin(sin(x))")
 plt.plot(df,label="d(sin(sin(x)))")
 plt.legend()
